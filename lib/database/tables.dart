@@ -38,3 +38,33 @@ class Purchases extends Table {
   DateTimeColumn get purchaseDate =>
       dateTime().withDefault(currentDateAndTime)();
 }
+
+// One record for each completed bill.
+class Sales extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  RealColumn get totalAmount => real()();
+
+  DateTimeColumn get saleDate => dateTime().withDefault(currentDateAndTime)();
+}
+
+// The products and quantities included in each bill.
+// Product details are saved as snapshots so sale history
+// remains readable if a product is later edited or deleted.
+class SaleItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  IntColumn get saleId => integer()();
+
+  IntColumn get productId => integer()();
+
+  TextColumn get productName => text()();
+
+  TextColumn get unit => text()();
+
+  IntColumn get quantity => integer()();
+
+  RealColumn get sellingPrice => real()();
+
+  RealColumn get lineTotal => real()();
+}
