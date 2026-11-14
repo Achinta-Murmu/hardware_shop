@@ -1,0 +1,58 @@
+name: Android build
+
+# Builds the Galla APK in the cloud, so nothing has to be installed on a laptop.
+# Every push to the android-native branch produces a fresh APK and updates the
+# "Galla preview" release, which is the download link for phones.
+
+on:
+  push:
+    branches: [android-native]
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GALLA_VERSION_CODE: ${{ github.run_number }}
+      GALLA_VERSION_NAME: 0.1.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK
+        run: ./gradlew :app:assembleRelease --stacktrace
+
+      - name: Rename APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/release/app-release.apk out/galla-preview.apk
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: galla-preview-apk
+          path: out/galla-preview.apk
+
+      - name: Publish preview release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="Galla preview build ${GALLA_VERSION_NAME} from commit ${GITHUB_SHA::7}. Download galla-preview.apk on an Android phone and open it to install."
+          gh release delete preview --cleanup-tag --yes >/dev/null 2>&1 || true
+          gh release create preview out/galla-preview.apk --title "Galla preview" --notes "$NOTES" --prerelease --target "$GITHUB_SHA"
