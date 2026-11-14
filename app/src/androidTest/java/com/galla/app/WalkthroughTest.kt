@@ -111,10 +111,39 @@ class WalkthroughTest {
 
     /** Types into the text box that is number `index` on screen, counted from the top. */
     private fun type(index: Int, text: String) {
-        val boxes = device.findObjects(By.clazz("android.widget.EditText")).sortedBy { it.visibleBounds.centerY() }
-        val box = boxes.getOrNull(index) ?: error("no text box number $index (found ${boxes.size})")
-        box.text = text
-        pause(600)
+        device.wait(Until.hasObject(By.clazz("android.widget.EditText")), 5000)
+        repeat(4) {
+            try {
+                val boxes = device.findObjects(By.clazz("android.widget.EditText")).sortedBy { it.visibleBounds.centerY() }
+                val box = boxes.getOrNull(index) ?: error("no text box number $index (found ${boxes.size})")
+                box.text = text
+                pause(600)
+                return
+            } catch (stale: StaleObjectException) {
+                pause(500)
+            }
+        }
+        error("kept changing, could not type: $text")
+    }
+
+    /** True when the navigation bar with the four tabs is showing. */
+    private fun atATab(): Boolean =
+        device.hasObject(By.pkg(app).text("Money")) && device.hasObject(By.pkg(app).text("Sell")) && device.hasObject(By.pkg(app).text("Items"))
+
+    /**
+     * Gets back to one of the four main tabs, whatever the last step left open, so one
+     * failed step cannot spoil all the steps after it.
+     */
+    private fun home() {
+        repeat(6) {
+            dismissSystemDialogs()
+            if (atATab()) return
+            if (!device.hasObject(By.pkg(app))) return // the app is not in front: nothing safe to press
+            closeKeyboard()
+            if (atATab()) return
+            device.pressBack()
+            pause(1200)
+        }
     }
 
     private fun back() = tapDesc("Back")
@@ -128,9 +157,10 @@ class WalkthroughTest {
         }
     }
 
-    private fun step(name: String, action: () -> Unit) {
+    private fun step(name: String, action: () -> Unit, fromTab: Boolean = true) {
         try {
             dismissSystemDialogs()
+            if (fromTab) home()
             action()
             log("ok    $name")
         } catch (t: Throwable) {
@@ -156,8 +186,8 @@ class WalkthroughTest {
         pause(4000)
         dismissSystemDialogs()
 
-        step("01 welcome") { shot("01-welcome") }
-        step("02 open the shop") {
+        step("01 welcome", { shot("01-welcome") }, fromTab = false)
+        step("02 open the shop", fromTab = false, action = {
             type(0, "Sharma Hardware")
             closeKeyboard()
             scrollAndTap("Open my shop")
@@ -165,15 +195,16 @@ class WalkthroughTest {
             device.wait(Until.hasObject(By.pkg(app).textContains("Today's sales")), 40000)
             pause(2500)
             shot("02-today")
-        }
+        })
         step("03 today, lower half") { swipeUp(); shot("03-today-more") }
         step("04 items") { tapTab("Items"); pause(1500); shot("04-items") }
         step("05 items, low only") { tapText("Low "); pause(1000); shot("05-items-low"); tapText("All "); pause(1000) }
-        step("06 item detail") { tapText("Brass Bib Tap"); pause(1800); shot("06-item") }
-        step("07 item detail, lower half") { swipeUp(); shot("07-item-more") }
-        step("08 add to bill") { scrollAndTap("Add to the bill"); pause(1200); back() }
+        step("06 item detail") { tapTab("Items"); tapText("Brass Bib Tap"); pause(1800); shot("06-item") }
+        step("07 item detail, lower half", { swipeUp(); shot("07-item-more") }, fromTab = false)
+        step("08 add to bill", { scrollAndTap("Add to the bill"); pause(1200); back() }, fromTab = false)
         step("09 new item form") {
-            tapDesc("Add item"); pause(1500)
+            tapTab("Items")
+            tapDesc("Add item"); pause(2000)
             type(0, "Cement Bag 50 kg")
             closeKeyboard()
             shot("09-new-item")
@@ -181,16 +212,18 @@ class WalkthroughTest {
         }
         step("10 sell, with the bill") { tapTab("Sell"); pause(1500); shot("10-sell") }
         step("11 sell, searching") {
+            tapTab("Sell")
             type(0, "wire")
             pause(1500)
             shot("11-sell-search")
             tapText("Copper Wire"); pause(1200)
             closeKeyboard()
         }
-        step("12 sell, two lines") { tapDesc("One more"); pause(800); shot("12-sell-bill") }
-        step("13 save the sale") { tapText("Save sale"); pause(3000); shot("13-receipt") }
-        step("14 next customer") { scrollAndTap("Next customer"); pause(1500); shot("14-sell-empty") }
+        step("12 sell, two lines") { tapTab("Sell"); tapDesc("One more"); pause(800); shot("12-sell-bill") }
+        step("13 save the sale") { tapTab("Sell"); tapText("Save sale"); pause(3000); shot("13-receipt") }
+        step("14 next customer", { scrollAndTap("Next customer"); pause(1500); shot("14-sell-empty") }, fromTab = false)
         step("15 scanner") {
+            tapTab("Sell")
             tapDesc("Scan a sticker"); pause(2500)
             // The phone asks for the camera the first time. (The button's wording differs in case between Android versions.)
             find(By.text(Pattern.compile("(?i)while using the app")), 4000)?.click()
@@ -199,17 +232,22 @@ class WalkthroughTest {
             tapDesc("Close the scanner")
         }
         step("16 money, day") { tapTab("Money"); pause(2000); shot("16-money") }
-        step("17 money, lower half") { swipeUp(); shot("17-money-more") }
-        step("18 money, month") {
-            device.swipe(device.displayWidth / 2, (device.displayHeight * 0.3).toInt(), device.displayWidth / 2, (device.displayHeight * 0.8).toInt(), 25)
-            pause(800)
-            tapText("Month"); pause(1800); shot("18-money-month")
-        }
-        step("19 add expense") { tapDesc("Add an expense"); pause(1500); shot("19-expense"); back() }
+        step("17 money, lower half") { tapTab("Money"); swipeUp(); shot("17-money-more") }
+        step("18 money, month") { tapTab("Money"); tapText("Month"); pause(1800); shot("18-money-month") }
+        step("19 add expense") { tapTab("Money"); tapDesc("Add an expense"); pause(1500); shot("19-expense"); back() }
         step("20 restock list") { tapTab("Today"); pause(1500); tapText("restocking"); pause(1500); shot("20-restock") }
-        step("21 stock in") { tapText("Teflon Tape"); pause(1500); type(0, "40"); closeKeyboard(); shot("21-stock-in"); back(); back() }
-        step("22 settings") { tapDesc("Settings"); pause(1500); shot("22-settings") }
-        step("23 dark theme") { tapText("Dark"); pause(1500); shot("23-settings-dark"); back(); pause(1500); shot("24-today-dark") }
+        step("21 stock in") {
+            tapTab("Today"); pause(1200); tapText("restocking"); pause(1500)
+            tapText("Teflon Tape"); pause(1500); type(0, "40"); closeKeyboard(); shot("21-stock-in")
+        }
+        step("22 settings") { tapTab("Today"); pause(1200); tapDesc("Settings"); pause(1500); shot("22-settings") }
+        step("22b settings, lower half", { swipeUp(); shot("22b-settings-more") }, fromTab = false)
+        step("23 dark theme") {
+            tapTab("Today"); pause(1200); tapDesc("Settings"); pause(1500)
+            tapText("Dark"); pause(1800); shot("23-settings-dark"); back(); pause(1800); shot("24-today-dark")
+        }
+        step("24b dark item") { tapTab("Items"); tapText("Brass Bib Tap"); pause(1800); shot("24b-item-dark") }
+        step("24c dark sell") { tapTab("Sell"); pause(1500); shot("24c-sell-dark") }
         step("25 dark items") { tapTab("Items"); pause(1500); shot("25-items-dark") }
         step("26 dark money") { tapTab("Money"); pause(1800); shot("26-money-dark") }
 
