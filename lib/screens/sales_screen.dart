@@ -145,6 +145,36 @@ class _SalesScreenState extends State<SalesScreen> {
     }
   }
 
+  Future<void> confirmSale() async {
+    if (quantities.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add products to the bill first')),
+      );
+      return;
+    }
+
+    try {
+      final saleId = await database.completeSale(
+        Map<int, int>.from(quantities),
+      );
+
+      setState(() {
+        quantities.clear();
+        // Also clear your bill items if they use a separate collection.
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sale #$saleId saved successfully')),
+      );
+    } on StateError catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Could not save sale: $e')));
+    }
+  }
+
   // Increase or decrease the quantity of a product.
   void changeQuantity(int productId, int change) {
     final product = billProducts[productId];
@@ -154,7 +184,6 @@ class _SalesScreenState extends State<SalesScreen> {
     final currentQuantity = quantities[productId] ?? 0;
     final newQuantity = currentQuantity + change;
     final availableStock = product.stockQuantity;
-
     if (newQuantity > availableStock) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -441,7 +470,7 @@ class _SalesScreenState extends State<SalesScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: showSaleStatus,
+                    onPressed: confirmSale,
                     icon: const Icon(Icons.receipt_long),
                     label: const Text('Confirm Sale'),
                   ),
