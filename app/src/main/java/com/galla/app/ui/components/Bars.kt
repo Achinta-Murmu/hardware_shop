@@ -2,6 +2,7 @@
 
 package com.galla.app.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -24,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -52,6 +55,18 @@ fun AppBar(
     subtitle: String = "",
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    // The bar is the first thing inside a scrolling page. Moving it down by exactly the
+    // distance scrolled keeps it pinned to the top, so Back is always within reach.
+    val scroll = LocalScreenScroll.current
+    val surface = MaterialTheme.colorScheme.surface
+    val pinned = if (scroll == null) {
+        Modifier
+    } else {
+        Modifier
+            .zIndex(1f)
+            .graphicsLayer { translationY = scroll.value.toFloat() }
+            .background(surface)
+    }
     TopAppBar(
         title = {
             if (title.isNotEmpty()) {
@@ -61,7 +76,7 @@ fun AppBar(
         subtitle = {
             if (subtitle.isNotEmpty()) Text(subtitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
-        modifier = modifier,
+        modifier = modifier.then(pinned),
         navigationIcon = { IconBtn(Ic.arrow_back, "Back", onBack) },
         actions = actions,
         windowInsets = NoInsets,

@@ -302,7 +302,9 @@ fun ItemDetailScreen(route: ItemDetail) {
                                 MoveType.OPENING -> "Opening stock"
                                 else -> "Counted"
                             },
-                            subtitle = listOf(move.note, Dates.friendly(move.at, now)).filter { it.isNotBlank() }.joinToString(" · "),
+                            // The opening row's note only repeats its title, so leave it out.
+                            subtitle = listOf(if (move.type == MoveType.OPENING) "" else move.note, Dates.friendly(move.at, now))
+                                .filter { it.isNotBlank() }.joinToString(" · "),
                             leading = {
                                 ShapeIcon(
                                     when (move.type) {
