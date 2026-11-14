@@ -102,7 +102,7 @@ fun MoneyScreen() {
             val onCard = if (loss) scheme.onErrorContainer else GallaTheme.extras.onHero
             Eyebrow(if (loss) "Loss" else "Profit", color = onCard.copy(alpha = 0.72f))
             Gap(2.dp)
-            val profit = Money.format(ui.profitPaise)
+            val profit = Money.format(if (loss) -ui.profitPaise else ui.profitPaise)
             RollingText(profit, style = fitted(profit))
             Gap(4.dp)
             Text("Sales, minus what the goods cost, minus expenses.", style = MaterialTheme.typography.bodyMedium)
@@ -144,7 +144,7 @@ fun MoneyScreen() {
             AmountRow("What those goods cost", "-" + Money.format(ui.costOfGoodsPaise))
             AmountRow("Expenses", "-" + Money.format(ui.expensesPaise))
             HorizontalDivider(Modifier.padding(vertical = 8.dp), color = scheme.outlineVariant)
-            AmountRow(if (loss) "Loss" else "Profit", Money.format(ui.profitPaise), strong = true, color = if (loss) scheme.error else GallaTheme.extras.good)
+            AmountRow(if (loss) "Loss" else "Profit", Money.format(if (loss) -ui.profitPaise else ui.profitPaise), strong = true, color = if (loss) scheme.error else GallaTheme.extras.good)
             Gap(8.dp)
             Text(
                 "Stock bought: ${Money.format(ui.purchasesPaise)}. It counts as money out, but only becomes a cost in profit when it is sold.",

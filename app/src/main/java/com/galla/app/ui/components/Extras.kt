@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -117,7 +118,10 @@ fun BarChart(bars: List<Bar>, modifier: Modifier = Modifier, height: Dp = 132.dp
                     color = if (bar.highlight) scheme.primary else scheme.onSurfaceVariant,
                     maxLines = 1,
                     softWrap = false,
-                    modifier = Modifier.padding(top = 6.dp),
+                    // A label can be wider than a thin bar. Let it spill sideways rather than be cut off.
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                        .wrapContentWidth(unbounded = true),
                 )
             }
         }

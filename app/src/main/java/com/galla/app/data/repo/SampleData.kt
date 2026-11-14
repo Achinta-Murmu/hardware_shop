@@ -84,8 +84,8 @@ class SampleData(private val shop: ShopRepository, private val now: () -> Long) 
         // Some stock bought and some shop costs paid during the week.
         shop.stockIn(ids[4], milli(50.0), paise(18.0), "Gupta Electricals", Dates.startOf(today.minusDays(4)) + 12 * hour)
         shop.stockIn(ids[10], milli(20.0), paise(68.0), "Shree Traders", Dates.startOf(today.minusDays(2)) + 11 * hour)
-        shop.addExpense("Electricity", "Monthly bill", paise(1850.0), Dates.startOf(today.minusDays(5)) + 13 * hour)
-        shop.addExpense("Transport", "Delivery van", paise(300.0), Dates.startOf(today.minusDays(3)) + 16 * hour)
+        shop.addExpense("Electricity", "Monthly bill", paise(640.0), Dates.startOf(today.minusDays(5)) + 13 * hour)
+        shop.addExpense("Transport", "Delivery van", paise(200.0), Dates.startOf(today.minusDays(3)) + 16 * hour)
         shop.addExpense("Tea & snacks", "", paise(120.0), Dates.startOf(today.minusDays(1)) + 17 * hour)
         shop.addExpense("Tea & snacks", "", paise(80.0), (current - 20 * 60_000L).coerceAtLeast(Dates.startOf(today)))
     }

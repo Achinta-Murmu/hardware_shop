@@ -169,7 +169,8 @@ fun ItemsScreen() {
         if (ui.all.isNotEmpty()) {
             ExtendedFloatingActionButton(
                 text = { Text("Add item") },
-                icon = { GIcon(Ic.add) },
+                // Material hides this button's text from screen readers and expects the icon to carry the label.
+                icon = { GIcon(Ic.add, contentDescription = "Add item") },
                 onClick = {
                     haptics.click()
                     nav.go(ItemEdit())

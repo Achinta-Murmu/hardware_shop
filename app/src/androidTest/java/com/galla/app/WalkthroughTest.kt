@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
@@ -57,15 +58,25 @@ class WalkthroughTest {
     }
 
     private fun tap(selector: BySelector, what: String) {
-        var node = find(selector)
-        if (node == null) {
-            // A system pop-up may have appeared in the meantime: clear it and look once more.
-            dismissSystemDialogs()
-            node = find(selector)
+        // The app redraws all the time (wavy bars, a turning shape), so a node found a moment
+        // ago can be "stale" by the time it is tapped. Look it up again and retry.
+        repeat(4) {
+            var node = find(selector)
+            if (node == null) {
+                // A system pop-up may have appeared in the meantime: clear it and look once more.
+                dismissSystemDialogs()
+                node = find(selector)
+            }
+            if (node == null) error("not on screen: $what")
+            try {
+                node.click()
+                pause(1300)
+                return
+            } catch (stale: StaleObjectException) {
+                pause(400)
+            }
         }
-        if (node == null) error("not on screen: $what")
-        node.click()
-        pause(1300)
+        error("kept changing, could not tap: $what")
     }
 
     private fun tapText(text: String) = tap(By.pkg(app).textContains(text), text)
@@ -162,7 +173,7 @@ class WalkthroughTest {
         step("07 item detail, lower half") { swipeUp(); shot("07-item-more") }
         step("08 add to bill") { scrollAndTap("Add to the bill"); pause(1200); back() }
         step("09 new item form") {
-            tapText("Add item"); pause(1500)
+            tapDesc("Add item"); pause(1500)
             type(0, "Cement Bag 50 kg")
             closeKeyboard()
             shot("09-new-item")
