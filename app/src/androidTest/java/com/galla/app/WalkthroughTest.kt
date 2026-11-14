@@ -157,7 +157,7 @@ class WalkthroughTest {
         }
     }
 
-    private fun step(name: String, action: () -> Unit, fromTab: Boolean = true) {
+    private fun step(name: String, fromTab: Boolean = true, action: () -> Unit) {
         try {
             dismissSystemDialogs()
             if (fromTab) home()
@@ -186,8 +186,8 @@ class WalkthroughTest {
         pause(4000)
         dismissSystemDialogs()
 
-        step("01 welcome", { shot("01-welcome") }, fromTab = false)
-        step("02 open the shop", fromTab = false, action = {
+        step("01 welcome", fromTab = false) { shot("01-welcome") }
+        step("02 open the shop", fromTab = false) {
             type(0, "Sharma Hardware")
             closeKeyboard()
             scrollAndTap("Open my shop")
@@ -195,13 +195,13 @@ class WalkthroughTest {
             device.wait(Until.hasObject(By.pkg(app).textContains("Today's sales")), 40000)
             pause(2500)
             shot("02-today")
-        })
+        }
         step("03 today, lower half") { swipeUp(); shot("03-today-more") }
         step("04 items") { tapTab("Items"); pause(1500); shot("04-items") }
         step("05 items, low only") { tapText("Low "); pause(1000); shot("05-items-low"); tapText("All "); pause(1000) }
         step("06 item detail") { tapTab("Items"); tapText("Brass Bib Tap"); pause(1800); shot("06-item") }
-        step("07 item detail, lower half", { swipeUp(); shot("07-item-more") }, fromTab = false)
-        step("08 add to bill", { scrollAndTap("Add to the bill"); pause(1200); back() }, fromTab = false)
+        step("07 item detail, lower half", fromTab = false) { swipeUp(); shot("07-item-more") }
+        step("08 add to bill", fromTab = false) { scrollAndTap("Add to the bill"); pause(1200); back() }
         step("09 new item form") {
             tapTab("Items")
             tapDesc("Add item"); pause(2000)
@@ -221,7 +221,7 @@ class WalkthroughTest {
         }
         step("12 sell, two lines") { tapTab("Sell"); tapDesc("One more"); pause(800); shot("12-sell-bill") }
         step("13 save the sale") { tapTab("Sell"); tapText("Save sale"); pause(3000); shot("13-receipt") }
-        step("14 next customer", { scrollAndTap("Next customer"); pause(1500); shot("14-sell-empty") }, fromTab = false)
+        step("14 next customer", fromTab = false) { scrollAndTap("Next customer"); pause(1500); shot("14-sell-empty") }
         step("15 scanner") {
             tapTab("Sell")
             tapDesc("Scan a sticker"); pause(2500)
@@ -241,7 +241,7 @@ class WalkthroughTest {
             tapText("Teflon Tape"); pause(1500); type(0, "40"); closeKeyboard(); shot("21-stock-in")
         }
         step("22 settings") { tapTab("Today"); pause(1200); tapDesc("Settings"); pause(1500); shot("22-settings") }
-        step("22b settings, lower half", { swipeUp(); shot("22b-settings-more") }, fromTab = false)
+        step("22b settings, lower half", fromTab = false) { swipeUp(); shot("22b-settings-more") }
         step("23 dark theme") {
             tapTab("Today"); pause(1200); tapDesc("Settings"); pause(1500)
             tapText("Dark"); pause(1800); shot("23-settings-dark"); back(); pause(1800); shot("24-today-dark")
