@@ -120,9 +120,10 @@ fun IconBtn(
 
 /**
  * FILLED is the main action. TONAL and OUTLINE are quieter. WARN is amber ("needs attention"),
- * DANGER is red, and HERO is the dark button that sits on a lime hero card.
+ * DANGER is red. HERO is the dark button that sits on a lime hero card, and HERO_QUIET is
+ * the plain-text button next to it (in the hero's own text colour, so it shows in both themes).
  */
-enum class BtnStyle { FILLED, TONAL, OUTLINE, TEXT, WARN, DANGER, HERO }
+enum class BtnStyle { FILLED, TONAL, OUTLINE, TEXT, WARN, DANGER, HERO, HERO_QUIET }
 
 /** Button heights: Small 40dp, Medium 56dp, Large 64dp. */
 enum class BtnSize { SM, MD, LG }
@@ -198,6 +199,12 @@ fun Btn(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
             ),
+            contentPadding = padding,
+            content = content,
+        )
+        BtnStyle.HERO_QUIET -> TextButton(
+            tap, shapes, sized, enabled,
+            colors = ButtonDefaults.textButtonColors(contentColor = GallaTheme.extras.onHero),
             contentPadding = padding,
             content = content,
         )

@@ -201,7 +201,7 @@ fun ItemDetailScreen(route: ItemDetail) {
                 Gap(16.dp)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Btn("Stock in", { nav.go(StockIn(item.id)) }, Modifier.weight(1f), icon = Ic.local_shipping, style = BtnStyle.FILLED)
-                    Btn("Count", { nav.go(StockCount(item.id)) }, Modifier.weight(1f), icon = Ic.checklist, style = BtnStyle.OUTLINE)
+                    Btn("Count", { nav.go(StockCount(item.id)) }, Modifier.weight(1f), icon = Ic.checklist, style = BtnStyle.TONAL)
                 }
             }
         }

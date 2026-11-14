@@ -107,7 +107,7 @@ fun TodayScreen() {
             Gap(18.dp)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Btn("New sale", { nav.switchTab(Sell) }, icon = Ic.point_of_sale, style = BtnStyle.HERO, fillIcon = true)
-                Btn("Scan", { nav.openIn(Sell, Scan("sell")) }, icon = Ic.qr_code_scanner, style = BtnStyle.TEXT)
+                Btn("Scan", { nav.openIn(Sell, Scan("sell")) }, icon = Ic.qr_code_scanner, style = BtnStyle.HERO_QUIET)
             }
         }
 

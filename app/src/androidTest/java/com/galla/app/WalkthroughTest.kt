@@ -97,6 +97,15 @@ class WalkthroughTest {
         pause(700)
     }
 
+    /** Scrolls the page back to its top. */
+    private fun toTop() {
+        val x = device.displayWidth / 2
+        repeat(3) {
+            device.swipe(x, (device.displayHeight * 0.30).toInt(), x, (device.displayHeight * 0.85).toInt(), 12)
+            pause(500)
+        }
+    }
+
     /** Swipes up until the text is on screen, then taps it. */
     private fun scrollAndTap(text: String) {
         repeat(8) {
@@ -233,8 +242,8 @@ class WalkthroughTest {
         }
         step("16 money, day") { tapTab("Money"); pause(2000); shot("16-money") }
         step("17 money, lower half") { tapTab("Money"); swipeUp(); shot("17-money-more") }
-        step("18 money, month") { tapTab("Money"); tapText("Month"); pause(1800); shot("18-money-month") }
-        step("19 add expense") { tapTab("Money"); tapDesc("Add an expense"); pause(1500); shot("19-expense"); back() }
+        step("18 money, month") { tapTab("Money"); toTop(); tapText("Month"); pause(1800); shot("18-money-month") }
+        step("19 add expense") { tapTab("Money"); toTop(); tapDesc("Add an expense"); pause(1500); shot("19-expense"); back() }
         step("20 restock list") { tapTab("Today"); pause(1500); tapText("restocking"); pause(1500); shot("20-restock") }
         step("21 stock in") {
             tapTab("Today"); pause(1200); tapText("restocking"); pause(1500)

@@ -69,26 +69,29 @@ Remotes in the working clone: `origin` is Achinta's repo (read-only for the rebu
 `fork` is `nayan-dey/hardware_shop`, where `android-native` is pushed and built.
 
 Feature status. "Seen" means it was seen working in walkthrough screenshots on a cloud
-emulator, not only compiled. Nothing has been tried on a real phone by the agent.
+emulator (light and dark), not only compiled. Nothing has been tried on a real phone by the
+agent, so haptics, printing and real camera scanning are untested.
 
 | Feature | Flutter (`main`) | Native (`android-native`) |
 |---|---|---|
-| Item list: name, category, unit, buy price, sell price, stock, low level | Built | Written |
-| Search items; filter by low and sold out | Search only | Written |
-| Shelf level shown as a bar on every item (wavy and amber when low) | No | Written |
-| Restock list with a suggested quantity, shareable as text | Missing | Written |
-| Unique item code and QR sticker, printable (50 × 30 mm) | Built | Written |
-| Scan QR to add to a bill (keeps scanning) or to find an item | Built | Written, cannot be tested on an emulator |
-| Stock in from a supplier (stock up, buy price updated) | Built | Written |
-| Count stock (correct the number, with a reason) | Missing | Written |
-| Sales bill, receipt, print, send as text | Built | Written |
-| Quantities with fractions (2.5 m, 0.5 kg) | No | Written |
-| Today screen: sales, profit, spending, stock value, recent activity | Placeholder zeros | Written |
-| Daily and monthly money in, money out, profit, chart, best sellers | Missing | Written |
-| Other expenses (rent, electricity and so on) | Missing | Written |
-| Backup to a file and restore from it | Missing | Written |
-| Light and dark theme, optional phone (wallpaper) colours, haptics | No | Written |
-| Sample shop for trying the app | No | Written |
+| Item list: name, category, unit, buy price, sell price, stock, low level | Built | Seen |
+| Search items; filter by low and sold out | Search only | Seen |
+| Shelf level shown as a bar on every item (wavy and amber when low) | No | Seen |
+| Restock list with a suggested quantity, shareable as text | Missing | Seen (sharing not tried) |
+| Unique item code and QR sticker | Built | Seen (printing not tried) |
+| Scan QR to add to a bill (keeps scanning) or to find an item | Built | Screen seen. Reading a real sticker is untested: the emulator has no real camera. |
+| Stock in from a supplier (stock up, buy price updated) | Built | Form seen, saving not exercised |
+| Count stock (correct the number, with a reason) | Missing | Written, not seen |
+| Sales bill and receipt | Built | Seen, including stock going down |
+| Print or send a receipt | Built | Written, not tried |
+| Quantities with fractions (2.5 m, 0.5 kg) | No | Seen in the sample data |
+| Today screen: sales, profit, spending, stock value, recent activity | Placeholder zeros | Seen |
+| Daily and monthly money in, money out, profit, chart, best sellers | Missing | Seen |
+| Other expenses (rent, electricity and so on) | Missing | Form seen, saving not exercised |
+| Backup to a file and restore from it | Missing | Written, not tried |
+| Light and dark theme | No | Seen |
+| Phone (wallpaper) colours, haptics | No | Written, not tried |
+| Sample shop for trying the app | No | Seen |
 | Languages other than English | No | Not started |
 | GST on bills | No | Not started |
 
@@ -285,6 +288,7 @@ Remove each one when it is answered, and record the answer in the right section.
 
 Newest first. One line per change to this file.
 
+- 2026-11-14: Feature table updated with what the emulator walkthrough has actually shown.
 - 2026-11-14: Native app "Galla" written. Sections 3, 5, 6, 7, 8 and 10 rewritten from plans into
   facts. Fractional quantities answered (supported).
 - 2026-11-14: Branch `android-native` created from `main` and pushed to the fork
