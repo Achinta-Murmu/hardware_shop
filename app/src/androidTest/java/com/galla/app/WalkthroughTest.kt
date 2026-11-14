@@ -107,6 +107,15 @@ class WalkthroughTest {
 
     private fun back() = tapDesc("Back")
 
+    /** Presses Back only if the keyboard is really open. With no keyboard, Back would leave the screen. */
+    private fun closeKeyboard() {
+        val shown = device.executeShellCommand("dumpsys input_method").contains("mInputShown=true")
+        if (shown) {
+            device.pressBack()
+            pause(900)
+        }
+    }
+
     private fun step(name: String, action: () -> Unit) {
         try {
             dismissSystemDialogs()
@@ -138,8 +147,7 @@ class WalkthroughTest {
         step("01 welcome") { shot("01-welcome") }
         step("02 open the shop") {
             type(0, "Sharma Hardware")
-            device.pressBack() // close the keyboard
-            pause(800)
+            closeKeyboard()
             scrollAndTap("Open my shop")
             // Sample data takes a few seconds to build.
             device.wait(Until.hasObject(By.pkg(app).textContains("Today's sales")), 40000)
@@ -155,7 +163,7 @@ class WalkthroughTest {
         step("09 new item form") {
             tapText("Add item"); pause(1500)
             type(0, "Cement Bag 50 kg")
-            device.pressBack(); pause(600)
+            closeKeyboard()
             shot("09-new-item")
             back()
         }
@@ -165,7 +173,7 @@ class WalkthroughTest {
             pause(1500)
             shot("11-sell-search")
             tapText("Copper Wire"); pause(1200)
-            device.pressBack(); pause(800)
+            closeKeyboard()
         }
         step("12 sell, two lines") { tapDesc("One more"); pause(800); shot("12-sell-bill") }
         step("13 save the sale") { tapText("Save sale"); pause(3000); shot("13-receipt") }
@@ -187,7 +195,7 @@ class WalkthroughTest {
         }
         step("19 add expense") { tapDesc("Add an expense"); pause(1500); shot("19-expense"); back() }
         step("20 restock list") { tapTab("Today"); pause(1500); tapText("restocking"); pause(1500); shot("20-restock") }
-        step("21 stock in") { tapText("Teflon Tape"); pause(1500); type(0, "40"); device.pressBack(); pause(600); shot("21-stock-in"); back(); back() }
+        step("21 stock in") { tapText("Teflon Tape"); pause(1500); type(0, "40"); closeKeyboard(); shot("21-stock-in"); back(); back() }
         step("22 settings") { tapDesc("Settings"); pause(1500); shot("22-settings") }
         step("23 dark theme") { tapText("Dark"); pause(1500); shot("23-settings-dark"); back(); pause(1500); shot("24-today-dark") }
         step("25 dark items") { tapTab("Items"); pause(1500); shot("25-items-dark") }
