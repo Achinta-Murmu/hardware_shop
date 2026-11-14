@@ -204,11 +204,12 @@ fun ShapeAvatar(name: String, group: String, modifier: Modifier = Modifier, size
     val scheme = MaterialTheme.colorScheme
     val seed = (group.ifBlank { name }.lowercase().hashCode() and 0x7fffffff)
     val shape = avatarShapes[seed % avatarShapes.size].toShape()
-    val (bg, fg) = when ((seed / avatarShapes.size) % 4) {
+    val (bg, fg) = when ((seed / 7) % 5) {
         0 -> scheme.primaryContainer to scheme.onPrimaryContainer
         1 -> scheme.secondaryContainer to scheme.onSecondaryContainer
         2 -> scheme.tertiaryContainer to scheme.onTertiaryContainer
-        else -> scheme.surfaceContainerHighest to scheme.onSurface
+        3 -> scheme.inverseSurface to scheme.inverseOnSurface
+        else -> scheme.primary to scheme.onPrimary
     }
     Box(
         modifier = modifier

@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,6 +114,9 @@ fun ItemsScreen() {
     val ui by vm.state.collectAsStateWithLifecycle()
     val scheme = MaterialTheme.colorScheme
     val visible = ui.visible
+    val listState = rememberLazyListState()
+    // A new filter or search is a new list: start it from the top, not where the old one was scrolled to.
+    LaunchedEffect(ui.filter, ui.query) { listState.scrollToItem(0) }
 
     Box(
         Modifier
@@ -148,6 +153,7 @@ fun ItemsScreen() {
                 )
                 else -> LazyColumn(
                     modifier = Modifier.fillMaxSize(),
+                    state = listState,
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 96.dp),
                     verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                 ) {

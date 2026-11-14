@@ -11,6 +11,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import org.junit.Test
+import java.util.regex.Pattern
 import org.junit.runner.RunWith
 
 /**
@@ -156,7 +157,7 @@ class WalkthroughTest {
         }
         step("03 today, lower half") { swipeUp(); shot("03-today-more") }
         step("04 items") { tapTab("Items"); pause(1500); shot("04-items") }
-        step("05 items, low only") { tapText("Low "); pause(1000); shot("05-items-low"); tapText("All ") }
+        step("05 items, low only") { tapText("Low "); pause(1000); shot("05-items-low"); tapText("All "); pause(1000) }
         step("06 item detail") { tapText("Brass Bib Tap"); pause(1800); shot("06-item") }
         step("07 item detail, lower half") { swipeUp(); shot("07-item-more") }
         step("08 add to bill") { scrollAndTap("Add to the bill"); pause(1200); back() }
@@ -180,8 +181,8 @@ class WalkthroughTest {
         step("14 next customer") { scrollAndTap("Next customer"); pause(1500); shot("14-sell-empty") }
         step("15 scanner") {
             tapDesc("Scan a sticker"); pause(2500)
-            // The phone asks for the camera the first time.
-            (find(By.textContains("While using"), 3000) ?: find(By.textContains("Only this time"), 1500))?.click()
+            // The phone asks for the camera the first time. (The button's wording differs in case between Android versions.)
+            find(By.text(Pattern.compile("(?i)while using the app")), 4000)?.click()
             pause(3500)
             shot("15-scanner")
             tapDesc("Close the scanner")

@@ -100,7 +100,8 @@ fun TodayScreen() {
             Gap(4.dp)
             Text(
                 if (ui.bills == 0) "No bills yet today"
-                else "${ui.bills} ${if (ui.bills == 1) "bill" else "bills"} · ${Money.format(ui.profitPaise)} profit",
+                else "${ui.bills} ${if (ui.bills == 1) "bill" else "bills"} · " +
+                    if (ui.profitPaise < 0L) "${Money.format(-ui.profitPaise)} loss so far" else "${Money.format(ui.profitPaise)} profit",
                 style = MaterialTheme.typography.titleSmall,
             )
             Gap(18.dp)
@@ -168,7 +169,7 @@ fun TodayScreen() {
         }
 
         // The four most common jobs
-        SectionHeader("Do something")
+        SectionHeader("Quick actions")
         Row(
             modifier = Modifier
                 .fillMaxWidth()
